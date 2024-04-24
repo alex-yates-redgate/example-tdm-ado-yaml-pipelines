@@ -2,13 +2,16 @@ name: redgate-anonymize-example
  
 schedules:
 - cron: 0 2 * * * # cron syntax for 2am daily
+  branches:
+    include: 
+    - main
   displayName: 2am daily # friendly name given to a specific schedule
 
 parameters:
 - name: serverinstance
-  default: MSSQL01
+  default: WIN2016
 - name: databaseName
-  default: AdventureWorks
+  default: Eastwind
 
 stages:
   - stage: Anonymize  
@@ -16,9 +19,7 @@ stages:
     jobs:
     - job: ${{parameters.databaseName}}
       displayName: Anonymize ${{parameters.databaseName}}
-      variables:
-      - example: "foo"
 
       steps:
-      - script: 'anonymize --version'
+      - script: 'anonymize mask --database-engine SqlServer --connection-string "Server=WIN2016; Database=Eastwind; Integrated Security=true; TrustServerCertificate=true" --masking-file masking.json --options-file options.json'
         displayName: 'Command Line Script'
