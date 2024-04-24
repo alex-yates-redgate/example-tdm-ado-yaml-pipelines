@@ -1,0 +1,24 @@
+name: redgate-anonymize-example
+ 
+schedules:
+- cron: 0 2 * * * # cron syntax for 2am daily
+  displayName: 2am daily # friendly name given to a specific schedule
+
+parameters:
+- name: serverinstance
+  default: MSSQL01
+- name: databaseName
+  default: AdventureWorks
+
+stages:
+  - stage: Anonymize  
+    displayName: Anonymize
+    jobs:
+    - job: ${{parameters.databaseName}}
+      displayName: Anonymize ${{parameters.databaseName}}
+      variables:
+      - example: "foo"
+
+      steps:
+      - script: 'anonymize --version'
+        displayName: 'Command Line Script'
