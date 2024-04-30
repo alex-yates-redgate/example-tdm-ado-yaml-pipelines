@@ -1,0 +1,53 @@
+name: redgate-subset-image-example
+ 
+schedules:
+- cron: 0 3 * * * # cron syntax for 3am daily
+  branches:
+    include: 
+    - main
+  displayName: 3am daily # friendly name given to a specific schedule
+
+parameters:
+- name: serverinstance
+  default: WIN2016
+- name: databaseName
+  default: Eastwind
+
+stages:
+  - stage: Subset  
+    displayName: Subset
+    jobs:
+    - job: ${{parameters.databaseName}}
+      displayName: Subset ${{parameters.databaseName}}
+
+      steps:
+      - displayName: 'Restore backup'
+        pwsh: |
+          Write-Output "To do: Restore a backup"
+      - displayName: 'Create target for subset'
+        pwsh: |
+          Write-Output "To do: Run DBCC CLONE DB"
+      - displayName: 'Run subset'
+        pwsh: |
+          Write-Output "To do: Run subset"
+      - displayName: 'Backup target'
+        pwsh: |
+          Write-Output "To do: Backup target DB"
+      - displayName: 'Clean up'
+        pwsh: |
+          Write-Output "To do: Delete staging databases"
+        
+
+  - stage: CreateImage  
+    displayName: Create Image
+    jobs:
+    - job: ${{parameters.databaseName}}
+      displayName: Create rgclone image for ${{parameters.databaseName}}
+
+      steps:
+      - displayName: 'Copy backup to file share'
+        pwsh: |
+          Write-Output "To do: Copy backup to fileshare"
+      - displayName: 'Create rgclone data image'
+        pwsh: |
+          Write-Output "To do: Create rgclone data image"
