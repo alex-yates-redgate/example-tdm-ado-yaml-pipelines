@@ -21,22 +21,21 @@ stages:
       displayName: Subset ${{parameters.databaseName}}
 
       steps:
-      - displayName: 'Restore backup'
-        pwsh: |
+      - powershell: |
           Write-Output "To do: Restore a backup"
-      - displayName: 'Create target for subset'
-        pwsh: |
+        displayName: 'Restore backup'
+      - powershell: |
           Write-Output "To do: Run DBCC CLONE DB"
-      - displayName: 'Run subset'
-        pwsh: |
+        displayName: 'Create target for subset'
+      - powershell: |
           Write-Output "To do: Run subset"
-      - displayName: 'Backup target'
-        pwsh: |
+        displayName: 'Run subset'
+      - powershell: |
           Write-Output "To do: Backup target DB"
-      - displayName: 'Clean up'
-        pwsh: |
+        displayName: 'Backup target'
+      - powershell: |
           Write-Output "To do: Delete staging databases"
-        
+        displayName: 'Clean up'
 
   - stage: CreateImage  
     displayName: Create Image
@@ -45,9 +44,9 @@ stages:
       displayName: Create rgclone image for ${{parameters.databaseName}}
 
       steps:
-      - displayName: 'Copy backup to file share'
-        pwsh: |
+      - powershell: |
           Write-Output "To do: Copy backup to fileshare"
-      - displayName: 'Create rgclone data image'
-        pwsh: |
+        displayName: 'Copy backup to file share'
+      - powershell: |
           Write-Output "To do: Create rgclone data image"
+        displayName: 'Create rgclone data image'
