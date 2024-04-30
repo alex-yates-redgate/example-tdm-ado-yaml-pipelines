@@ -13,7 +13,7 @@ parameters:
 - name: serverinstance
   default: "WIN2016"
 - name: databaseName
-  default: "Eastwind"
+  default: "Northwind"
 - name: backupDir
   default: 'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\Backup'
 
