@@ -45,7 +45,19 @@ stages:
           Invoke-DbaQuery -SqlInstance ${{parameters.serverinstance}} -Query $sql
         displayName: 'Create target for subset'
       - powershell: |
-          Write-Output "To do: Run subset"
+          # params in
+          $serverinstance = "${{parameters.serverinstance}}"
+          $sourceDb = "${{parameters.databaseName}}_FullRestore"
+          $targetDb = "${{parameters.databaseName}}_Subset" 
+          
+          # params out
+          $sourceConnectionString = "server=${serverinstance};database=${sourceDb};IntegratedSecurity=true;TrustServerCertificate=true"
+          $targetConnectionString = "server=${serverinstance};database=${targetDb};IntegratedSecurity=true;TrustServerCertificate=true"
+          $filterTable = "dbo.Orders"
+          $filterClause = "OrderId < 10260"
+
+          # running subset
+          .\subsetter --database-engine=sqlserver --source-connection-string=$sourceConnectionString --target-connection-string=$targetConnectionString --filter-table=$filterTable --filter-clause=$filterClause
         displayName: 'Run subset'
       - powershell: |
           $subsetDb = "${{parameters.databaseName}}_Subset"
