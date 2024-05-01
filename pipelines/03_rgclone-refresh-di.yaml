@@ -9,6 +9,9 @@ schedules:
 
 trigger: none
 
+variables:
+- group: rgclone
+
 stages:
   - stage: RefreshImage  
     displayName: Refresh existing rgclone data-image
@@ -18,6 +21,10 @@ stages:
 
       steps:
       - powershell: |
+          # Authenticating against cloning cluster
+          Write-Output "Authenticating against the cloning cluster with token $env:RGCLONE_ACCESS_TOKEN"
+          rgclone auth -t $env:RGCLONE_ACCESS_TOKEN
+
           # Set any old images to lifetime of 1m (fast delete)
           Write-Output "If exists, renaming empty-sql-old image to empty-sql-deleting, and setting lifetime to 1m"
           rgclone update di empty-sql-old -n empty-sql-deleting
@@ -32,4 +39,6 @@ stages:
           rgclone update di empty-sql-current -n empty-sql-old
           Write-Output "Name swapping empty-sql-new > empty-sql-current"
           rgclone update di empty-sql-new -n empty-sql-current
+        env:
+          RGCLONE_ACCESS_TOKEN: $(RGCLONE_ACCESS_TOKEN)
         displayName: 'Refresh rgclone data image'

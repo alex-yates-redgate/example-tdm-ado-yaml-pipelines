@@ -9,6 +9,9 @@ schedules:
 
 trigger: none
 
+variables:
+- group: rgclone
+
 stages:
   - stage: RefreshDevClone  
     displayName: Refresh existing rgclone data-container
@@ -18,6 +21,10 @@ stages:
 
       steps:
       - powershell: |
+          # Authenticating against cloning cluster
+          Write-Output "Authenticating against the cloning cluster with token $env:RGCLONE_ACCESS_TOKEN"
+          rgclone auth -t $env:RGCLONE_ACCESS_TOKEN
+          
           # Set any old containers to lifetime of 1m (fast delete)
           Write-Output "If exists, renaming empty-sql-old container to empty-sql-deleting, and setting lifetime to 1m"
           rgclone update dc empty-sql-dev-old -n empty-sql-dev-deleting
@@ -32,4 +39,6 @@ stages:
           rgclone update dc empty-sql-dev-current -n empty-sql-dev-old
           Write-Output "Name swapping empty-sql-dev-new > empty-sql-dev-current"
           rgclone update dc empty-sql-dev-new -n empty-sql-dev-current
+        env:
+          RGCLONE_ACCESS_TOKEN: $(RGCLONE_ACCESS_TOKEN)
         displayName: 'Refresh rgclone data container'
