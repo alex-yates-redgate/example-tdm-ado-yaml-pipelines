@@ -19,7 +19,7 @@ stages:
       steps:
       - powershell: |
           # Set any old containers to lifetime of 1m (fast delete)
-          Write-Output "If exists, renaming empty-sql-old container to empty-sql-deleting, and setting lifetime to 1m"
+          Write-Output "If exists, renaming empty-sql-dev-old container to empty-sql-dev-deleting, and setting lifetime to 1m"
           rgclone update dc empty-sql-dev-old -n empty-sql-dev-deleting
           rgclone update dc empty-sql-dev-deleting -t 1m
 
