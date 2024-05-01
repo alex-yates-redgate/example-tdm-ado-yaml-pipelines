@@ -1,0 +1,35 @@
+name: redgate-rgclone-image-example
+ 
+schedules:
+- cron: 0 0 * * SAT # cron syntax for 12am on Saturday morning
+  branches:
+    include: 
+    - main
+  displayName: 12am on Saturday # friendly name given to a specific schedule
+
+trigger: none
+
+stages:
+  - stage: RefreshImage  
+    displayName: Refresh existing rgclone data-image
+    jobs:
+    - job: RefreshImage
+      displayName: Refresh existing rgclone data-image
+
+      steps:
+      - powershell: |
+          # Set any old images to lifetime of 1m (fast delete)
+          Write-Output "If exists, renaming empty-sql-old image to empty-sql-deleting, and setting lifetime to 1m"
+          rgclone update di empty-sql-old -n empty-sql-deleting
+          rgclone update di empty-sql-deleting -t 1m
+
+          # Create a new data image
+          Write-Output "Creating new data image, with name empty-sql-new"
+          rgclone create di -f config\empty-sql.yaml -n empty-sql-new
+
+          # Name swap (near zero downtime)
+          Write-Output "Name swapping empty-sql-current > empty-sql-old"
+          rgclone update di empty-sql-current -n empty-sql-old
+          Write-Output "Name swapping empty-sql-new > empty-sql-current"
+          rgclone update di empty-sql-new -n empty-sql-current
+        displayName: 'Refresh rgclone data image'

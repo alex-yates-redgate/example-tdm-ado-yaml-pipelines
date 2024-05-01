@@ -1,0 +1,35 @@
+name: redgate-rgclone-container-example
+ 
+schedules:
+- cron: 0 0 * * SUN # cron syntax for 12am on Saturday morning
+  branches:
+    include: 
+    - main
+  displayName: 12am Sunday # friendly name given to a specific schedule
+
+trigger: none
+
+stages:
+  - stage: RefreshDevClone  
+    displayName: Refresh existing rgclone data-container
+    jobs:
+    - job: RefreshDevClone
+      displayName: Refresh existing rgclone data-container
+
+      steps:
+      - powershell: |
+          # Set any old containers to lifetime of 1m (fast delete)
+          Write-Output "If exists, renaming empty-sql-old container to empty-sql-deleting, and setting lifetime to 1m"
+          rgclone update dc empty-sql-dev-old -n empty-sql-dev-deleting
+          rgclone update dc empty-sql-dev-deleting -t 1m
+
+          # Create a new data container
+          Write-Output "Creating new data container, with name empty-sql-dev-new"
+          rgclone create dc -i empty-sql-current -n empty-sql-dev-new
+
+          # Name swap (near zero downtime)
+          Write-Output "Name swapping empty-sql-dev-current > empty-sql-dev-old"
+          rgclone update dc empty-sql-dev-current -n empty-sql-dev-old
+          Write-Output "Name swapping empty-sql-dev-new > empty-sql-dev-current"
+          rgclone update dc empty-sql-dev-new -n empty-sql-dev-current
+        displayName: 'Refresh rgclone data container'

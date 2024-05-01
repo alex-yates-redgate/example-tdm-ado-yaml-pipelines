@@ -53,11 +53,11 @@ stages:
           # params out
           $sourceConnectionString = "server=${serverinstance};database=${sourceDb};Integrated Security=true;TrustServerCertificate=true"
           $targetConnectionString = "server=${serverinstance};database=${targetDb};Integrated Security=true;TrustServerCertificate=true"
-          $filterTable = "dbo.Orders"
+          $startingTable = "dbo.Orders"
           $filterClause = "OrderId < 10260"
 
           # running subset
-          subsetter --database-engine=sqlserver --source-connection-string=$sourceConnectionString --target-connection-string=$targetConnectionString --filter-table=$filterTable --filter-clause=$filterClause
+          subsetter --database-engine=sqlserver --source-connection-string=$sourceConnectionString --target-connection-string=$targetConnectionString --starting-table=$startingTable --filter-clause=$filterClause
         displayName: 'Run subset'
       - powershell: |
           $subsetDb = "${{parameters.databaseName}}_Subset"
@@ -73,17 +73,6 @@ stages:
           import-module dbatools
           Invoke-DbaQuery -SqlInstance ${{parameters.serverinstance}} -Query $sql
         displayName: 'Clean up'
-
-  - stage: CreateImage  
-    displayName: Create Image
-    jobs:
-    - job: ${{parameters.databaseName}}
-      displayName: Create rgclone image for ${{parameters.databaseName}}
-
-      steps:
       - powershell: |
           Write-Output "To do: Copy backup to fileshare"
         displayName: 'Copy backup to file share'
-      - powershell: |
-          Write-Output "To do: Create rgclone data image"
-        displayName: 'Create rgclone data image'
