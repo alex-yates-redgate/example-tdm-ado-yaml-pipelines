@@ -22,6 +22,7 @@ stages:
       steps:
       - powershell: |
           $ErrorActionPreference = 'Stop'
+
           # Authenticating against cloning cluster
           Write-Output "Authenticating against the cloning cluster"
           rgclone auth -t $env:RGCLONE_ACCESS_TOKEN
@@ -63,12 +64,12 @@ stages:
           Write-Output "Name swapping $currentName > $oldName"
           rgclone update di $currentName -n $oldName
           if ($lastExitCode -ne 0){
-            echo "##vso[task.logissue type=warning]No image found called $oldName"
+            echo "##vso[task.logissue type=warning]Failed to rename $currentName to $oldName"
           }
           Write-Output "Name swapping $newName > $currentName"
           rgclone update di $newName -n $currentName
           if ($lastExitCode -ne 0){
-            echo "##vso[task.logissue type=error]Failed to create image with name $newName"
+            echo "##vso[task.logissue type=error]Failed to rename $newName to $currentName"
             exit 1
           } 
         env:
